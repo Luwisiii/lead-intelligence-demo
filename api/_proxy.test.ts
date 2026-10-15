@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, expect, test, vi } from 'vitest'
+import { cleanChat, POST as chatPOST } from './chat.js'
 import { cleanLead, POST } from './lead.js'
 import { GET } from './stats.js'
 
@@ -10,6 +11,8 @@ beforeEach(() => {
   vi.stubEnv('N8N_LEAD_PATH', '/webhook/lead')
   vi.stubEnv('N8N_STATS_PATH', '/webhook/stats')
   vi.stubEnv('N8N_DEMO_KEY', 'secret')
+  vi.stubEnv('N8N_CHAT_PATH', '/webhook/chat')
+  vi.stubEnv('N8N_CHAT_AUTH', 'demo:pw')
 })
 afterEach(() => {
   fetchMock.mockReset()
@@ -72,4 +75,31 @@ test('stats are CDN-cached only when n8n succeeds', async () => {
   const denied = await GET()
   expect(denied.status).toBe(403)
   expect(denied.headers.get('Cache-Control')).toBeNull()
+})
+
+const chat = (body: unknown) => chatPOST(new Request('http://x/api/chat', { method: 'POST', body: JSON.stringify(body) }))
+const ask = { action: 'sendMessage', sessionId: 's1', chatInput: ' How many leads this week? ' }
+
+test('cleanChat only allows sendMessage with a session and a short question', () => {
+  expect(cleanChat(ask)).toEqual({ action: 'sendMessage', sessionId: 's1', chatInput: 'How many leads this week?' })
+  expect(cleanChat({ ...ask, action: 'loadPreviousSession' })).toBeNull()
+  expect(cleanChat({ ...ask, sessionId: '' })).toBeNull()
+  expect(cleanChat({ ...ask, chatInput: 'x'.repeat(501) })).toBeNull()
+})
+
+test('chat: Basic Auth added, only the cleaned fields forwarded', async () => {
+  fetchMock.mockResolvedValueOnce(Response.json({ output: '3 leads' }))
+  const res = await chat({ ...ask, metadata: { evil: true } })
+  expect(await res.json()).toEqual({ output: '3 leads' })
+  const [url, init] = fetchMock.mock.calls[0]
+  expect(url).toBe('https://n8n.test/webhook/chat')
+  expect(init.headers.Authorization).toBe(`Basic ${btoa('demo:pw')}`)
+  expect(JSON.parse(init.body)).toEqual({ action: 'sendMessage', sessionId: 's1', chatInput: 'How many leads this week?' })
+})
+
+test('chat: invalid input and missing auth never reach n8n', async () => {
+  expect((await chat({ ...ask, chatInput: '' })).status).toBe(400)
+  vi.stubEnv('N8N_CHAT_AUTH', '')
+  expect((await chat(ask)).status).toBe(500)
+  expect(fetchMock).not.toHaveBeenCalled()
 })
