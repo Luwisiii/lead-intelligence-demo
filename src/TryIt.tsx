@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import ResultCard, { type LeadResult } from './ResultCard'
+import type { Stats } from './Stats'
 
 type Fields = { name: string; email: string; company: string; message: string }
 type State =
@@ -31,7 +32,7 @@ const NOTICES = {
 const field =
   'mt-1.5 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-ink placeholder:text-slate-400 focus:border-ink focus:outline-none focus:ring-2 focus:ring-ink/20 dark:border-slate-700 dark:bg-night-raised dark:text-slate-100 dark:focus:border-slate-300 dark:focus:ring-slate-300/20'
 
-export default function TryIt() {
+export default function TryIt({ onStats }: { onStats: (stats: Stats) => void }) {
   const [fields, setFields] = useState<Fields>({ name: '', email: '', company: '', message: '' })
   const [state, setState] = useState<State>({ kind: 'idle' })
   const [step, setStep] = useState(0)
@@ -62,6 +63,7 @@ export default function TryIt() {
         body: JSON.stringify({ ...fields, website }),
       })
       const data = await res.json().catch(() => ({}))
+      if (data.stats) onStats(data.stats)
       if (data.result) setState({ kind: 'result', result: data.result, message: fields.message.trim() })
       else if (data.duplicate) setState({ kind: 'duplicate' })
       else if (res.status === 429) setState({ kind: 'rate_limited' })

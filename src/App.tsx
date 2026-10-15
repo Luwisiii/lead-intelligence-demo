@@ -1,8 +1,29 @@
+import { useEffect, useState } from 'react'
+import HowItWorks from './HowItWorks'
+import StatsSection, { type Stats } from './Stats'
 import TryIt from './TryIt'
 
 const REPO = 'https://github.com/Luwisiii/lead-intelligence-demo'
 
 export default function App() {
+  const [stats, setStats] = useState<Stats | null>(null)
+  const [statsFailed, setStatsFailed] = useState(false)
+  const [includesYours, setIncludesYours] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(r => (r.ok ? r.json() : Promise.reject(r.status)))
+      // Don't let a slow initial load overwrite the fresher stats a submission brought back
+      .then((data: Stats) => setStats(current => current ?? data))
+      .catch(() => setStatsFailed(true))
+  }, [])
+
+  function onStats(fresh: Stats) {
+    setStats(fresh)
+    setStatsFailed(false)
+    setIncludesYours(true)
+  }
+
   return (
     <div className="min-h-dvh bg-paper font-sans text-ink antialiased dark:bg-night dark:text-slate-100">
       <main className="mx-auto max-w-6xl px-4 sm:px-6">
@@ -22,7 +43,9 @@ export default function App() {
             Source on GitHub
           </a>
         </header>
-        <TryIt />
+        <TryIt onStats={onStats} />
+        <StatsSection stats={stats} failed={statsFailed && !stats} includesYours={includesYours} />
+        <HowItWorks />
       </main>
     </div>
   )
