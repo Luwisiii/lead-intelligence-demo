@@ -1,1 +1,38 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Public Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-paper: #f6f8fb;
+  --color-ink: #14213d;
+  --color-night: #0d1321;
+  --color-night-raised: #151d2e;
+  --color-marker: #ffe45c;
+
+  --animate-rise: rise 280ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(8px); }
+}
+
+/* The signature: the AI's evidence quote, highlighted inside the visitor's own message */
+.evidence-mark {
+  background: linear-gradient(var(--color-marker), var(--color-marker)) no-repeat;
+  background-size: 100% 100%;
+  color: var(--color-ink);
+  border-radius: 2px;
+  padding: 0 2px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+@keyframes mark-in {
+  from { background-size: 0% 100%; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .evidence-mark { animation: mark-in 700ms 300ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+}
