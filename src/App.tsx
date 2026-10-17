@@ -49,6 +49,12 @@ export default function App() {
         <AskAgent />
         <HowItWorks />
       </main>
+      <footer className="mx-auto max-w-6xl border-t border-slate-200 px-4 py-8 text-sm text-slate-500 sm:px-6 dark:border-slate-800 dark:text-slate-400">
+        Built with n8n, Gemini, React and Vercel.{' '}
+        <a href={REPO} className="underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink dark:hover:text-slate-100">
+          Source on GitHub
+        </a>
+      </footer>
     </div>
   )
 }
