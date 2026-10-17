@@ -4,7 +4,7 @@ import type { Stats } from './Stats'
 
 type Fields = { name: string; email: string; company: string; message: string }
 type State =
-  | { kind: 'idle' | 'scoring' | 'duplicate' | 'rate_limited' | 'too_fast' | 'invalid' | 'error' }
+  | { kind: 'idle' | 'scoring' | 'duplicate' | 'rate_limited' | 'too_fast' | 'ai_limit' | 'invalid' | 'error' }
   | { kind: 'result'; result: LeadResult; message: string }
 
 const SAMPLES = [
@@ -25,6 +25,7 @@ const STEPS = ['Checking for duplicates', 'Reading your message with Gemini', 'C
 const NOTICES = {
   duplicate: ['Already scored', "You've sent this exact message before. Each message is scored once, so there's nothing new to show. Change the wording to score it again."],
   rate_limited: ['Daily limit reached', 'This demo scores up to 5 messages per email, and about 50 in total, each day. Try again tomorrow.'],
+  ai_limit: ['Free AI limit reached', "This demo runs on Gemini's free tier, which has used up its quota for now. It resets daily, so try again later."],
   too_fast: ['Too many requests', 'Your connection sent several requests in a short time. Wait a minute and try again.'],
   invalid: ['Check the form', 'Name, a valid email and a message are required. Keep the message under 2,000 characters.'],
   error: ["Couldn't score your message", "The AI didn't answer in time. Wait a minute and try again."],
@@ -68,6 +69,7 @@ export default function TryIt({ onStats }: { onStats: (stats: Stats) => void }) 
       if (data.result) setState({ kind: 'result', result: data.result, message: fields.message.trim() })
       else if (data.duplicate) setState({ kind: 'duplicate' })
       else if (data.error === 'rate_limited') setState({ kind: 'rate_limited' })
+      else if (data.error === 'ai_limit') setState({ kind: 'ai_limit' })
       // Vercel Firewall's per-IP rule answers before our code runs (429, or 403 when set to deny)
       else if (res.status === 429 || res.status === 403) setState({ kind: 'too_fast' })
       else if (res.status === 400) setState({ kind: 'invalid' })
