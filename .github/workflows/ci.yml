@@ -30,14 +30,20 @@ jobs:
     env:
       VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
       VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }} # read by the CLI, so it never appears in a command line
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
+      # No token here: dependency install scripts never see it
       - run: npm ci
+      # The Vercel CLI reads VERCEL_TOKEN itself, so it never appears in a command line
       - run: npx vercel@64.5.0 pull --yes --environment=production
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      # Builds from the .vercel/ files pull wrote; no token while third-party build code runs
       - run: npx vercel@64.5.0 build --prod
       - run: npx vercel@64.5.0 deploy --prebuilt --prod
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
