@@ -62,6 +62,7 @@ export default function AskAgent() {
       const data = await res.json().catch(() => ({}))
       if (res.ok && typeof data.output === 'string') reply = data.output
       else if (res.status === 400) reply = 'Keep questions under 500 characters.'
+      else if (res.status === 429 || res.status === 403) reply = 'Too many questions in a short time. Wait a minute and try again.'
     } catch {
       // keep the default reply
     }

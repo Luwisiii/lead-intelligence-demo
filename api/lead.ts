@@ -21,17 +21,18 @@ export async function POST(request: Request) {
   const lead = cleanLead(await request.json().catch(() => null))
   if (!lead) return Response.json({ ok: false, error: 'invalid' }, { status: 400 })
 
+  // Time budget: 48 s scoring + 8 s stats stays under the function's 60 s maxDuration (vercel.json)
   const res = await callN8n(process.env.N8N_LEAD_PATH, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(lead),
-  })
+  }, 48_000)
 
   // /api/stats is CDN-cached, so a scored lead brings fresh stats back with it
-  // and the visitor sees their own lead counted straight away.
+  // and the visitor sees their own lead counted straight away. Slow stats just means none attached.
   const data = res.ok ? ((await res.clone().json().catch(() => null)) as { result?: unknown } | null) : null
   if (!data?.result) return res
-  const statsRes = await callN8n(process.env.N8N_STATS_PATH)
+  const statsRes = await callN8n(process.env.N8N_STATS_PATH, {}, 8_000)
   const stats = statsRes.ok ? await statsRes.json().catch(() => null) : null
   return Response.json({ ...data, stats })
 }
