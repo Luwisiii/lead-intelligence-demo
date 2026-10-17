@@ -88,6 +88,15 @@ If requests to n8n fail with `upstream_unreachable` and the dev server logs `una
 
 CI runs lint, test and build on every push and pull request to `main`.
 
+## Deploy
+
+Live at **https://lead-intelligence-demo-iota.vercel.app**.
+
+- **Production** deploys from the `deploy` job in [`ci.yml`](.github/workflows/ci.yml), only after lint, test and build pass on `main`. Vercel's own production deploys from `main` are turned off in [`vercel.json`](vercel.json).
+- **Pull requests** still get Vercel preview deploys.
+- The deploy job needs three repo secrets: `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID`. The six `N8N_*` variables live in the Vercel project settings, not in GitHub.
+- The n8n webhooks only allow the production origin (`allowedOrigins`). If the domain changes, update it on the Stats API, Lead intake API and Public Q&A agent triggers.
+
 ## Layout
 
 ```
