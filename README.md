@@ -12,7 +12,7 @@ A public demo page for a live AI lead-scoring system built in **n8n**. Send an i
 
 - **Try it:** submit an inquiry (or click a sample) and get the verdict in about 3 to 10 seconds: outcome, confidence, the evidence highlighted inside their own message, a summary, a next step and budget and timeline.
 - **Live numbers:** leads, won, conversion rate and needs review, computed from the stored rows.
-- **Ask the agent:** a Gemini agent with three read-only tools (`count_leads`, `find_leads`, `get_lead`) that only sees anonymous data.
+- **Ask the agent:** an AI agent with three read-only tools (`count_leads`, `find_leads`, `get_lead`) that only sees anonymous data. It runs on Llama 3.3 via Groq's free tier, with Gemini as a fallback, to keep the demo free.
 - **How it works:** the workflows and the guardrails, on the page.
 
 ## How it's built
