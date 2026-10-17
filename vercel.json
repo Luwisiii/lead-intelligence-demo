@@ -1,5 +1,7 @@
 {
+  "git": { "deploymentEnabled": { "main": false } },
   "functions": {
-    "api/lead.ts": { "maxDuration": 60 }
+    "api/lead.ts": { "maxDuration": 60 },
+    "api/chat.ts": { "maxDuration": 60 }
   }
 }
