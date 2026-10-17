@@ -73,8 +73,28 @@ test('stats are CDN-cached only when n8n succeeds', async () => {
   expect(fetchMock.mock.calls[0][1].headers['X-Demo-Key']).toBe('secret')
   fetchMock.mockResolvedValueOnce(new Response('Authorization data is wrong!', { status: 403 }))
   const denied = await GET()
-  expect(denied.status).toBe(403)
+  expect(denied.status).toBe(502)
+  expect(await denied.json()).toEqual({ ok: false, error: 'upstream_error' })
   expect(denied.headers.get('Cache-Control')).toBeNull()
+})
+
+test('raw n8n errors are hidden; our own error codes pass through', async () => {
+  vi.spyOn(console, 'error').mockImplementation(() => {})
+  fetchMock.mockResolvedValueOnce(Response.json({ code: 0, message: 'Node "Rate limit" failed' }, { status: 500 }))
+  const hidden = await post(valid)
+  expect(hidden.status).toBe(502)
+  expect(await hidden.text()).not.toContain('Rate limit')
+  fetchMock.mockResolvedValueOnce(Response.json({ ok: false, error: 'scoring_failed' }, { status: 502 }))
+  expect(await (await post(valid)).json()).toEqual({ ok: false, error: 'scoring_failed' })
+  fetchMock.mockResolvedValueOnce(new Response('<html>ok</html>', { status: 200 }))
+  expect((await post(valid)).status).toBe(502) // not JSON, even with a 200
+})
+
+test('a failed stats follow-up still returns the verdict', async () => {
+  fetchMock
+    .mockResolvedValueOnce(Response.json({ ok: true, result: { final_outcome: 'warm' } }))
+    .mockRejectedValueOnce(new Error('timeout'))
+  expect(await (await post(valid)).json()).toEqual({ ok: true, result: { final_outcome: 'warm' }, stats: null })
 })
 
 const chat = (body: unknown) => chatPOST(new Request('http://x/api/chat', { method: 'POST', body: JSON.stringify(body) }))
