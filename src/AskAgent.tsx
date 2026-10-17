@@ -42,7 +42,8 @@ export default function AskAgent() {
   const logRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: 'smooth' })
+    const smooth = !matchMedia('(prefers-reduced-motion: reduce)').matches
+    logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: smooth ? 'smooth' : 'auto' })
   }, [messages, busy])
 
   async function send(question: string) {

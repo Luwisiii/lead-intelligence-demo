@@ -132,7 +132,8 @@ export default function TryIt({ onStats }: { onStats: (stats: Stats) => void }) 
           {scoring ? 'Scoring…' : 'Score my inquiry'}
         </button>
         <p className="text-sm text-slate-500 dark:text-slate-400">
-          Your message is saved to this demo's lead table and counted in the stats. Names, emails and messages are never shown on this page.
+          Your message is saved to this demo's lead table and counted in the stats. Your name, email and company are never shown on this page; the
+          chat agent may quote short parts of messages, by lead number only.
         </p>
       </form>
 
