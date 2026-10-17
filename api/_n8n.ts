@@ -30,8 +30,9 @@ export async function callN8n(path: string | undefined, init: RequestInit = {}, 
   const error = (body as { error?: unknown } | null)?.error
   const ours = body !== null && typeof body === 'object' && (res.ok || KNOWN_ERRORS.includes(String(error)))
   if (!ours) {
-    // Raw n8n errors can name nodes or workflows: log them for us, show visitors a generic code
-    console.error(`n8n ${path} -> ${res.status}: ${text.slice(0, 300)}`)
+    // Raw n8n errors can name nodes or echo the visitor's input: keep them out of the response
+    // and the logs. The n8n execution list has the details.
+    console.error(`n8n ${path} -> ${res.status}`)
     return Response.json({ ok: false, error: 'upstream_error' }, { status: 502 })
   }
   return Response.json(body, { status: res.status })
