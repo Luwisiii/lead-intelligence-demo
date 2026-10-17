@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import AskAgent from './AskAgent'
 import HowItWorks from './HowItWorks'
 import StatsSection, { type Stats } from './Stats'
 import TryIt from './TryIt'
@@ -45,6 +46,7 @@ export default function App() {
         </header>
         <TryIt onStats={onStats} />
         <StatsSection stats={stats} failed={statsFailed && !stats} includesYours={includesYours} />
+        <AskAgent />
         <HowItWorks />
       </main>
     </div>
