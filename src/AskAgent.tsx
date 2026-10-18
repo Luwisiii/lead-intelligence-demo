@@ -79,7 +79,7 @@ export default function AskAgent() {
     <section aria-labelledby="ask-heading" className="border-t border-slate-200 py-16 dark:border-slate-800">
       <h2 id="ask-heading" className="font-display text-3xl font-bold tracking-tight">Ask the agent</h2>
       <p className="mt-3 max-w-2xl text-slate-600 dark:text-slate-400">
-        An AI agent (Llama 3.3 on Groq, with Gemini as backup) with three read-only tools: count, list and look up leads. This public copy only sees anonymous data: lead numbers,
+        An AI agent (OpenAI's open gpt-oss-120b on Groq, with Gemini as backup) with three read-only tools: count, list and look up leads. This public copy only sees anonymous data: lead numbers,
         dates, outcomes and short quotes.
       </p>
 
