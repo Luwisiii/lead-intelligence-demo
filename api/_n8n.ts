@@ -2,7 +2,7 @@
 // Adds the secret header server-side and passes n8n's status code through.
 
 // Error codes our n8n workflows return on purpose. Anything else is hidden from visitors.
-const KNOWN_ERRORS = ['invalid', 'rate_limited', 'scoring_failed']
+const KNOWN_ERRORS = ['invalid', 'rate_limited', 'scoring_failed', 'ai_limit']
 
 export async function callN8n(path: string | undefined, init: RequestInit = {}, timeoutMs = 55_000): Promise<Response> {
   const { N8N_BASE_URL, N8N_DEMO_KEY } = process.env

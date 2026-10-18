@@ -86,6 +86,9 @@ test('raw n8n errors are hidden; our own error codes pass through', async () => 
   expect(await hidden.text()).not.toContain('Rate limit')
   fetchMock.mockResolvedValueOnce(Response.json({ ok: false, error: 'scoring_failed' }, { status: 502 }))
   expect(await (await post(valid)).json()).toEqual({ ok: false, error: 'scoring_failed' })
+  fetchMock.mockResolvedValueOnce(Response.json({ ok: false, error: 'ai_limit' }, { status: 503 }))
+  const limited = await post(valid)
+  expect([limited.status, await limited.json()]).toEqual([503, { ok: false, error: 'ai_limit' }])
   fetchMock.mockResolvedValueOnce(new Response('<html>ok</html>', { status: 200 }))
   expect((await post(valid)).status).toBe(502) // not JSON, even with a 200
 })
