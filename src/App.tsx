@@ -5,6 +5,12 @@ import StatsSection, { type Stats } from './Stats'
 import TryIt from './TryIt'
 
 const REPO = 'https://github.com/Luwisiii/lead-intelligence-demo'
+const PORTFOLIO = 'https://luwisiii.vercel.app/'
+
+const heroLink =
+  'font-medium underline decoration-slate-300 underline-offset-4 hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink dark:decoration-slate-600 dark:hover:decoration-slate-100'
+const footerLink =
+  'underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink dark:hover:text-slate-100'
 
 export default function App() {
   const [stats, setStats] = useState<Stats | null>(null)
@@ -37,12 +43,14 @@ export default function App() {
             This form feeds a live lead-scoring system built in n8n. Gemini judges how likely your message is to become a paying client, and it has to
             quote the exact words that justify the verdict.
           </p>
-          <a
-            href={REPO}
-            className="mt-6 inline-block font-medium underline decoration-slate-300 underline-offset-4 hover:decoration-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink dark:decoration-slate-600 dark:hover:decoration-slate-100"
-          >
-            Source on GitHub
-          </a>
+          <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2">
+            <a href={PORTFOLIO} className={heroLink}>
+              More of my work
+            </a>
+            <a href={REPO} className={heroLink}>
+              Source on GitHub
+            </a>
+          </div>
         </header>
         <TryIt onStats={onStats} />
         <StatsSection stats={stats} failed={statsFailed && !stats} includesYours={includesYours} />
@@ -50,8 +58,12 @@ export default function App() {
         <HowItWorks />
       </main>
       <footer className="mx-auto max-w-6xl border-t border-slate-200 px-4 py-8 text-sm text-slate-500 sm:px-6 dark:border-slate-800 dark:text-slate-400">
-        Built with n8n, Gemini, React and Vercel.{' '}
-        <a href={REPO} className="underline underline-offset-4 hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink dark:hover:text-slate-100">
+        Built by{' '}
+        <a href={PORTFOLIO} className={footerLink}>
+          Paolo Dumayas
+        </a>{' '}
+        with n8n, Gemini, Groq, React and Vercel.{' '}
+        <a href={REPO} className={footerLink}>
           Source on GitHub
         </a>
       </footer>
